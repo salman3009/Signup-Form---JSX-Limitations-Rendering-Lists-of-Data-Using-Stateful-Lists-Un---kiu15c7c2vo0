@@ -14,7 +14,7 @@ const App = () => {
   const [getFormValidation,setFormValidation]=useState({
     name:{
       required:true,
-      pattern:/^[a-zA-Z0-p\s]+$/,
+      pattern:/^[a-zA-Z0-9\s]+$/,
       patternMessage:"Name is not alphanumeric",
       requiredError:"Name Error",
       status:false
@@ -30,7 +30,7 @@ const App = () => {
       required:true,
       patten:/^[0-9]+$/,
       patternMessage:"Phone Number must contain only numbers",
-      requiredErro:"Phone Number Error",
+      requiredError:"Phone Number Error",
       status:false
     },
     password:{
@@ -66,8 +66,7 @@ const App = () => {
        
         if(getFormValidationDetails[obj]['required'] && !getForm[obj]){
           getFormValidationDetails[obj]['status'] = "required";
-   
-      }
+        }
 
     }
 
@@ -86,13 +85,22 @@ const App = () => {
            { getFormValidation['name']['status']=="required"? getFormValidation['name']['requiredError']:getFormValidation['name']['patternMessage']}
           </div> } 
         Email Address:<input type="email" onChange={onChangeHandler} name="email"  data-testid ="email"/>
+        {getFormValidation['email']['status'] && <div className="danger">
+           { getFormValidation['email']['status']=="required"? getFormValidation['email']['requiredError']:getFormValidation['email']['patternMessage']}
+          </div> } 
         Gender:<select data-testid ="gender" onChange={onChangeHandler}>
           <option value="male">Male</option>
           <option value="female">Female</option>
           <option value="others">others</option>
         </select>
         Phone Number:<input type="number" onChange={onChangeHandler} name="phoneNumber" data-testid ="phoneNumber"/>
+        {getFormValidation['phoneNumber']['status'] && <div className="danger">
+           { getFormValidation['phoneNumber']['status']=="required"? getFormValidation['phoneNumber']['requiredError']:getFormValidation['phoneNumber']['patternMessage']}
+          </div> } 
         Password:<input type="password" onChange={onChangeHandler} name="password" data-testid ="password"/>
+        {getFormValidation['password']['status'] && <div className="danger">
+           { getFormValidation['password']['status']=="required"? getFormValidation['password']['requiredError']:getFormValidation['password']['patternMessage']}
+          </div> } 
         <button onClick={onSubmitHandler} data-testid ="submit">Submit</button> 
       </div>
       <div className="container">
