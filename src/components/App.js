@@ -1,51 +1,28 @@
 import React, {Component, useEffect, useState} from "react";
 import '../styles/App.css';
-
+import {validationState,initialForm} from '../helper';
 const App = () => {
 
-  const [getForm,setForm]=useState({
-    name:'',
-    email:'',
-    gender:'male',
-    phoneNumber:'',
-    password:''
-  });
+  const [getForm,setForm]=useState(initialForm);
 
-  const [getFormValidation,setFormValidation]=useState({
-    name:{
-      required:true,
-      pattern:/^[a-zA-Z0-9\s]+$/,
-      patternMessage:"Name is not alphanumeric",
-      requiredError:"Name Error",
-      status:false
-    },
-    email:{
-      required:true,
-      patten:/@+/,
-      patternMessage:"Email must contain @",
-      requiredError:'Email Error',
-      status:false
-    },
-    phoneNumber:{
-      required:true,
-      patten:/^[0-9]+$/,
-      patternMessage:"Phone Number must contain only numbers",
-      requiredError:"Phone Number Error",
-      status:false
-    },
-    password:{
-      required:true,
-      pattern:/^[a-zA-Z]{6,}$/,
-      patternMessage:"Password must contain atleast 6 letters",
-      requiredError:"Password Error",
-      status:false
-    }
-  })
+  const [getFormValidation,setFormValidation]=useState(validationState);
 
   const [getUserName,setUserName] = useState('');
 
+  const [getSubmit,setSubmit] = useState(false);
+
   useEffect(()=>{
-     console.log(getFormValidation);
+    console.log(getForm);
+    let flag = true;
+    for(let obj in getFormValidation){
+         if(getFormValidation[obj]['status']!='complete'){
+            flag = false;
+         }
+    }
+    if(flag){
+      let email = getForm.email.split('@')[0];
+      setUserName(`Hello ${email}`)
+    }   
   },[getFormValidation]);
 
 
@@ -59,33 +36,34 @@ const App = () => {
 
 
   const onSubmitHandler =()=>{
-
+    setUserName('');
     let getFormValidationDetails = getFormValidation;
 
       for(let obj in getFormValidationDetails){
        
-        if(getFormValidationDetails[obj]['required'] && !getForm[obj]){
+        if(getFormValidationDetails[obj]['required'] && getForm[obj]==''){
           getFormValidationDetails[obj]['status'] = "required";
+        }
+        else if(getFormValidationDetails[obj]['pattern'] &&  !getFormValidationDetails[obj]['pattern'].test(getForm[obj])){
+          getFormValidationDetails[obj]['status'] = "pattern";
+        }
+        else{
+          getFormValidationDetails[obj]['status'] = "complete";
         }
 
     }
-
     setFormValidation({...getFormValidationDetails});
-
-
-
-      let email = getForm.email.split('@')[0];
-      setUserName(`Hello ${email}`)
+    setSubmit(true);
   }
   return (
     <div id="main">
       <div className="container">
         Name:<input type="text" onChange={onChangeHandler} name="name" data-testid="name"/>
-         {getFormValidation['name']['status'] && <div className="danger">
+         {getSubmit && getFormValidation['name']['status'] && getFormValidation['name']['status']!='complete' && <div className="danger">
            { getFormValidation['name']['status']=="required"? getFormValidation['name']['requiredError']:getFormValidation['name']['patternMessage']}
           </div> } 
-        Email Address:<input type="email" onChange={onChangeHandler} name="email"  data-testid ="email"/>
-        {getFormValidation['email']['status'] && <div className="danger">
+        Email Address:<input type="text" onChange={onChangeHandler} name="email"  data-testid ="email"/>
+        {getSubmit && getFormValidation['email']['status'] &&  getFormValidation['email']['status']!='complete' && <div className="danger">
            { getFormValidation['email']['status']=="required"? getFormValidation['email']['requiredError']:getFormValidation['email']['patternMessage']}
           </div> } 
         Gender:<select data-testid ="gender" onChange={onChangeHandler}>
@@ -94,11 +72,11 @@ const App = () => {
           <option value="others">others</option>
         </select>
         Phone Number:<input type="number" onChange={onChangeHandler} name="phoneNumber" data-testid ="phoneNumber"/>
-        {getFormValidation['phoneNumber']['status'] && <div className="danger">
+        {getSubmit && getFormValidation['phoneNumber']['status'] && getFormValidation['phoneNumber']['status']!='complete' &&  <div className="danger">
            { getFormValidation['phoneNumber']['status']=="required"? getFormValidation['phoneNumber']['requiredError']:getFormValidation['phoneNumber']['patternMessage']}
           </div> } 
         Password:<input type="password" onChange={onChangeHandler} name="password" data-testid ="password"/>
-        {getFormValidation['password']['status'] && <div className="danger">
+        {getSubmit && getFormValidation['password']['status'] && getFormValidation['password']['status']!='complete' && <div className="danger">
            { getFormValidation['password']['status']=="required"? getFormValidation['password']['requiredError']:getFormValidation['password']['patternMessage']}
           </div> } 
         <button onClick={onSubmitHandler} data-testid ="submit">Submit</button> 
