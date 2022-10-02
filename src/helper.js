@@ -17,7 +17,7 @@ export const validationState={
         },
         email:{
           required:true,
-          patten:/@+/,
+          pattern:/@+/,
           patternMessage:"Email must contain @",
           requiredError:'Email Error',
           status:false
